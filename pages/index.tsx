@@ -1,7 +1,41 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Home: NextPage = () => {
+  /* ======================= *
+        create local state
+        for incoming API data
+  *  ===========================*/
+  const [graphqlData, setGraphqlData] = useState();
+  const [restData, setRestData] = useState();
+
+  useEffect(() => {
+    /* ============ *
+        fetch data
+        from GraphQL API/api/graphql
+    *  ==============================*/
+    const fetchGrapqlAPI = async () => {
+      const response = await axios.get(`/api/graphql`);
+      setGraphqlData(response.data);
+    };
+    // run API call
+    fetchGrapqlAPI();
+
+    /* ============= *
+        fetch data
+        from REST API/api/rest
+    *  =========================*/
+    const fetchRestAPI = async () => {
+      const response = await axios.get(`/api/rest`);
+      setRestData(response.data);
+    };
+    // run API call
+    fetchRestAPI();
+    // set dependency array
+  }, [setGraphqlData, setRestData]);
+
   return (
     <div className={`max-w-5xl mx-auto`}>
       <Head>
@@ -10,11 +44,39 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={`bg-gray-200 p-4 m-4`}>
+      <main className={`w-full rounded-xl p-4 m-4`}>
         <h1 className={`text-2xl font-bold text-center`}>
-          Hello from Nextjs and Tailwind
+          Next.js - Typescript - TailwindCSS - Cypress - GraphQL - REST
         </h1>
       </main>
+
+      {/* ====================================== *
+            flex container for two sided layout
+        *  =====================================*/}
+      <div className={`flex`}>
+        {/* =====================*
+            wrapper for rendering
+            the GraphQL API response data
+        *  ==============================*/}
+        <div className={`bg-gray-200 rounded-xl p-4 m-4`}>
+          <h2 className={`text-xl font-bold py-4`}>GraphQL API Response</h2>
+          <p className={`pb-8`}>
+            Check out the API route /api/graphql to see the code.
+          </p>
+          <pre> {JSON.stringify(graphqlData, null, 2)} </pre>
+        </div>
+        {/* ======================*
+            wrapper for rendering
+            the REST API response data
+        *  ============================*/}
+        <div className={`bg-gray-200 rounded-xl p-4 m-4`}>
+          <h2 className={`text-xl font-bold py-4`}>REST API Response</h2>
+          <p className={`pb-8`}>
+            Check out the API route /api/rest to see the code.
+          </p>
+          <pre> {JSON.stringify(restData, null, 2)} </pre>
+        </div>
+      </div>
     </div>
   );
 };
